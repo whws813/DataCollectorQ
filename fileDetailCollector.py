@@ -5,6 +5,8 @@ from xml.dom.minidom import parse
 import xml.dom.minidom
 import re
 import codecs
+import time
+import  xlwt
 
 
 def cutHeadTail(oldStr):
@@ -14,15 +16,32 @@ def titleFormer(oldTitle):
     searchObj = re.search(r'>.*?</',oldTitle)
     return cutHeadTail(searchObj.group())
 
-journalList = ['QHXB']
-year = '2015';
+
+#journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
+erroList = ['DZYX']
+#journalList =['DZXU','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
+journalList = ['BFXB']
+year = '2015'
+
+startTime = time.asctime( time.localtime(time.time()) )
 
 
 for journalName in journalList:
 
-    outputFile = open('data/'+journalName + '.csv', 'w')
-    outputFile.write(codecs.BOM_UTF8)
-    outputFile.write('年份,期号,标题,作者,单位,链接\n')
+    print journalName
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(journalName)
+    ws.write(0,0,'年份')
+    ws.write(0,1,'期号')
+    ws.write(0,2,'标题')
+    ws.write(0,3,'作者')
+    ws.write(0,4,'单位')
+    ws.write(0,5,'城市')
+    ws.write(0,6,'链接')
+    #outputFile = open('data/'+journalName + '.csv', 'w')
+    #outputFile = codecs.open('data/'+journalName + '.csv', 'w','gb2312')
+    #outputFile.write(codecs.BOM_UTF8)
+    #outputFile.write('年份,期号,标题,作者,单位,城市,链接\n')
 
     ###require year list
     url = "http://navi.cnki.net/knavi/JournalDetail/GetJournalYearList?pcode=CJFD&pykm=" + journalName + "&pIdx=0"
@@ -40,16 +59,17 @@ for journalName in journalList:
     collection = DOMTree.documentElement
     years = collection.getElementsByTagName("dl")
 
+    rowIndex = 0
     for yearItem in years:
         em = yearItem.getElementsByTagName('em')
         yearNum = em.item(0).firstChild.data
         if yearNum == year:
-            print yearNum
+            #print yearNum
             issueList = yearItem.getElementsByTagName('a')
             for issueItem in issueList:
                 issueId = issueItem.getAttribute('id')
                 issueNum = issueId[6:]
-                print issueNum
+                print "||" , issueNum
                 articlIndex = 1
                 while 1:
                     if articlIndex< 10:
@@ -58,7 +78,7 @@ for journalName in journalList:
                         articlDetailUrl = "http://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=" + journalName + year + issueNum + "0" + str(articlIndex) + "&dbname=CJFDLAST" + year
                     else:
                         articlDetailUrl = "http://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=" + journalName + year + issueNum + str(articlIndex)+"&dbname=CJFDLAST" + year
-                    print articlDetailUrl
+                    #print articlDetailUrl
 
                     articlReq = urllib2.Request(articlDetailUrl)
                     resData = urllib2.urlopen(articlReq)
@@ -67,23 +87,39 @@ for journalName in journalList:
                     titleObj = re.search(r'<h2\s*class="title".*?h2>', articlRes)
                     if titleObj == None:
                         break
-                    outputFile.write(yearNum + ',' + issueNum + ',')
+                    #outputFile.write(yearNum + ',' + issueNum + ',')
+                    rowIndex += 1
+                    ws.write(rowIndex,0,yearNum)
+                    ws.write(rowIndex,1,issueNum)
 
-                    print titleObj.group()
+                    #print titleObj.group()
                     title = titleFormer(titleObj.group())
-                    outputFile.write(title+',')
+                    ws.write(rowIndex,2,title)
+                    #outputFile.write(title+',')
                     authorDiv = re.search(r'<div\s*class="author".*?div>', articlRes)
                     authorList = re.findall(r'>[^<][^>]+?<', authorDiv.group())
+                    authors = ''
                     for author in authorList:
-                        print author
-                        outputFile.write(cutHeadTail(author) + '/')
-                    outputFile.write(',')
+                        authors += cutHeadTail(author) + '/'
+                    ws.write(rowIndex,3,authors)
+
+                        #print author
+                        #outputFile.write(cutHeadTail(author) + '/')
+                    #outputFile.write(',')
                     orgnDiv = re.search(r'<div\s*class="orgn".*?div>', articlRes)
                     orgnList = re.findall(r'>[^<][^>]+?<', orgnDiv.group())
+                    orgns = ''
                     for orgn in orgnList:
-                        print orgn
-                        outputFile.write(cutHeadTail(orgn) + '/')
-                    outputFile.write(',' + articlDetailUrl + '\n')
+                        orgns += orgn + '/'
+                        #print orgn
+                        #outputFile.write(cutHeadTail(orgn) + '/')
+                    #outputFile.write(',,' + articlDetailUrl + '\n')
+                    ws.write(rowIndex,4,orgns)
+                    ws.write(rowIndex,6,articlDetailUrl)
                     articlIndex += 1
             break
-    outputFile.close()
+    #outputFile.close()
+    wb.save('data/'+journalName + '.xls')
+endTime = time.asctime( time.localtime(time.time()) )
+print "StartTime: ", startTime
+print "EndTime: ",endTime
