@@ -4,7 +4,6 @@ import  urllib2
 from xml.dom.minidom import parse
 import xml.dom.minidom
 import re
-import codecs
 import time
 import  xlwt
 
@@ -18,9 +17,7 @@ def titleFormer(oldTitle):
 
 
 #journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
-erroList = ['DZYX']
-#journalList =['DZXU','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
-journalList = ['BFXB']
+journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
 year = '2015'
 
 startTime = time.asctime( time.localtime(time.time()) )
@@ -38,10 +35,6 @@ for journalName in journalList:
     ws.write(0,4,'单位')
     ws.write(0,5,'城市')
     ws.write(0,6,'链接')
-    #outputFile = open('data/'+journalName + '.csv', 'w')
-    #outputFile = codecs.open('data/'+journalName + '.csv', 'w','gb2312')
-    #outputFile.write(codecs.BOM_UTF8)
-    #outputFile.write('年份,期号,标题,作者,单位,城市,链接\n')
 
     ###require year list
     url = "http://navi.cnki.net/knavi/JournalDetail/GetJournalYearList?pcode=CJFD&pykm=" + journalName + "&pIdx=0"
