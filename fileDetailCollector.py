@@ -17,7 +17,8 @@ def titleFormer(oldTitle):
 
 
 #journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
-journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
+#journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
+journalList = ['XTLL']
 year = '2015'
 
 startTime = time.asctime( time.localtime(time.time()) )
@@ -34,7 +35,8 @@ for journalName in journalList:
     ws.write(0,3,'作者')
     ws.write(0,4,'单位')
     ws.write(0,5,'城市')
-    ws.write(0,6,'链接')
+    ws.write(0,6,'基金')
+    ws.write(0,7,'链接')
 
     ###require year list
     url = "http://navi.cnki.net/knavi/JournalDetail/GetJournalYearList?pcode=CJFD&pykm=" + journalName + "&pIdx=0"
@@ -77,6 +79,7 @@ for journalName in journalList:
                     resData = urllib2.urlopen(articlReq)
                     articlRes = resData.read()
 
+
                     titleObj = re.search(r'<h2\s*class="title".*?h2>', articlRes)
                     if titleObj == None:
                         break
@@ -108,11 +111,20 @@ for journalName in journalList:
                         #outputFile.write(cutHeadTail(orgn) + '/')
                     #outputFile.write(',,' + articlDetailUrl + '\n')
                     ws.write(rowIndex,4,orgns)
-                    ws.write(rowIndex,6,articlDetailUrl)
+
+                    fundDiv = re.search(r'<label id="catalog_FUND">基金：</label>[\s\S]*?</p',articlRes)
+                    if fundDiv != None:
+                        print fundDiv.group()
+                        fundList = re.findall(r"'.*?\(.*?\)", fundDiv.group())
+                        funds = ''
+                        for fund in fundList:
+                            funds += fund + '/'
+                        ws.write(rowIndex,6,funds)
+                    ws.write(rowIndex,7,articlDetailUrl)
                     articlIndex += 1
             break
     #outputFile.close()
-    wb.save('data/'+journalName + '.xls')
+    wb.save('dataTest/'+journalName + '.xls')
 endTime = time.asctime( time.localtime(time.time()) )
 print "StartTime: ", startTime
 print "EndTime: ",endTime

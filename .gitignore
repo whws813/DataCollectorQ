@@ -14,3 +14,7 @@
 *.xls
 
 *.docx
+
+*.zip
+
+test.py
