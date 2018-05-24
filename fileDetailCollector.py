@@ -18,25 +18,34 @@ def titleFormer(oldTitle):
 
 #journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
 #journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
-journalList = ['XTLL']
+#journalList = ['ZGKS']
+#journalList = ['SXXB','JAXK','LXXB','BZCJ','WLXB','GXXB','FXHX','GDXH','TWXB','CHXB','DQWX','DQXK'] ###done
+
+#journalList = ['DLYJ','STXB','SWDY','ZWSB','SLXX']
+#journalList = ['ZHYX','DSDX','DYJD','ZYKX','ZHLX','WEIJ','ZHYF','ZCYO','ZGZY','ZRSZ','ZJSB','ZYXX','ZGKF','ZHXX','ZHJH','ZHWK','ZHGK','ZGWK','ZHFC','ZHEK','ZHZL','ZHSJ','ZHPF','ZHEB','ZHYK','ZHKY','ZHGS','YXXB','ZGYX']
+#journalList = ['ZNYK','HBNB','GHDQ','TRXB','NYGU','XBZW','ZGSK','ZWBL','YYXB','LYKE','LYKX','XMSY','ZGXQ','CYXB','SCKX','DWYC','FUHE','BZGC','SXJS','ZLXB','ZKKX','JLXB','ZGKD','MTXB','SYXB','SKYK','TRQG','YJFX','GANT','JSXB','ZYXZ','COSE','JXXB','MCXX','ZGJX']
+#journalList = ['BGXB','NRJX','YZJS','ZGDC','DLXT','DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB','YSLX','JZJB','YTGC','YTLX','SLXB','SKXJ','JYGC','ZGTK','ZGGL','ZGZC','HKXB','TJJS','HJKZ','HJXX','ZAQK']
+journalList = ['WLXB','STXB']
 year = '2015'
 
 startTime = time.asctime( time.localtime(time.time()) )
 
-
+wb = xlwt.Workbook(encoding='utf-8')
+ws = wb.add_sheet('sheet1')
+rowIndex =0
 for journalName in journalList:
 
     print journalName
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet(journalName)
-    ws.write(0,0,'年份')
-    ws.write(0,1,'期号')
-    ws.write(0,2,'标题')
-    ws.write(0,3,'作者')
-    ws.write(0,4,'单位')
-    ws.write(0,5,'城市')
-    ws.write(0,6,'基金')
-    ws.write(0,7,'链接')
+    # wb = xlwt.Workbook(encoding='utf-8')
+    # ws = wb.add_sheet(journalName)
+    # ws.write(0,0,'年份')
+    # ws.write(0,1,'期号')
+    # ws.write(0,2,'标题')
+    # ws.write(0,3,'作者')
+    # ws.write(0,4,'单位')
+    # ws.write(0,5,'城市')
+    # ws.write(0,6,'基金')
+    # ws.write(0,7,'链接')
 
     ###require year list
     url = "http://navi.cnki.net/knavi/JournalDetail/GetJournalYearList?pcode=CJFD&pykm=" + journalName + "&pIdx=0"
@@ -54,7 +63,7 @@ for journalName in journalList:
     collection = DOMTree.documentElement
     years = collection.getElementsByTagName("dl")
 
-    rowIndex = 0
+    #rowIndex = 0
     for yearItem in years:
         em = yearItem.getElementsByTagName('em')
         yearNum = em.item(0).firstChild.data
@@ -114,7 +123,6 @@ for journalName in journalList:
 
                     fundDiv = re.search(r'<label id="catalog_FUND">基金：</label>[\s\S]*?</p',articlRes)
                     if fundDiv != None:
-                        print fundDiv.group()
                         fundList = re.findall(r"'.*?\(.*?\)", fundDiv.group())
                         funds = ''
                         for fund in fundList:
@@ -124,7 +132,7 @@ for journalName in journalList:
                     articlIndex += 1
             break
     #outputFile.close()
-    wb.save('dataTest/'+journalName + '.xls')
+wb.save('dataTest/'+year + '.xls')
 endTime = time.asctime( time.localtime(time.time()) )
 print "StartTime: ", startTime
 print "EndTime: ",endTime
