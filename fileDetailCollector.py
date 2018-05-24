@@ -16,17 +16,15 @@ def titleFormer(oldTitle):
     return cutHeadTail(searchObj.group())
 
 
-#journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
-#journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB']
-#journalList = ['ZGKS']
-#journalList = ['SXXB','JAXK','LXXB','BZCJ','WLXB','GXXB','FXHX','GDXH','TWXB','CHXB','DQWX','DQXK'] ###done
-
-#journalList = ['DLYJ','STXB','SWDY','ZWSB','SLXX']
+journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
+#journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB',ZGKS']
+#journalList = ['SXXB','JAXK','LXXB','BZCJ','WLXB','GXXB','FXHX','GDXH','TWXB','CHXB','DQWX','DQXK','DLYJ','STXB','SWDY','ZWSB','SLXX']
 #journalList = ['ZHYX','DSDX','DYJD','ZYKX','ZHLX','WEIJ','ZHYF','ZCYO','ZGZY','ZRSZ','ZJSB','ZYXX','ZGKF','ZHXX','ZHJH','ZHWK','ZHGK','ZGWK','ZHFC','ZHEK','ZHZL','ZHSJ','ZHPF','ZHEB','ZHYK','ZHKY','ZHGS','YXXB','ZGYX']
 #journalList = ['ZNYK','HBNB','GHDQ','TRXB','NYGU','XBZW','ZGSK','ZWBL','YYXB','LYKE','LYKX','XMSY','ZGXQ','CYXB','SCKX','DWYC','FUHE','BZGC','SXJS','ZLXB','ZKKX','JLXB','ZGKD','MTXB','SYXB','SKYK','TRQG','YJFX','GANT','JSXB','ZYXZ','COSE','JXXB','MCXX','ZGJX']
 #journalList = ['BGXB','NRJX','YZJS','ZGDC','DLXT','DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB','YSLX','JZJB','YTGC','YTLX','SLXB','SKXJ','JYGC','ZGTK','ZGGL','ZGZC','HKXB','TJJS','HJKZ','HJXX','ZAQK']
-journalList = ['WLXB','STXB']
-year = '2015'
+#journalList = ['WLXB','STXB']
+
+year = '2014'
 
 startTime = time.asctime( time.localtime(time.time()) )
 
@@ -94,19 +92,20 @@ for journalName in journalList:
                         break
                     #outputFile.write(yearNum + ',' + issueNum + ',')
                     rowIndex += 1
-                    ws.write(rowIndex,0,yearNum)
-                    ws.write(rowIndex,1,issueNum)
+                    ws.write(rowIndex,0,journalName)
+                    ws.write(rowIndex,1,yearNum)
+                    ws.write(rowIndex,2,issueNum)
 
                     #print titleObj.group()
                     title = titleFormer(titleObj.group())
-                    ws.write(rowIndex,2,title)
+                    ws.write(rowIndex,3,title)
                     #outputFile.write(title+',')
                     authorDiv = re.search(r'<div\s*class="author".*?div>', articlRes)
                     authorList = re.findall(r'>[^<][^>]+?<', authorDiv.group())
                     authors = ''
                     for author in authorList:
                         authors += cutHeadTail(author) + '/'
-                    ws.write(rowIndex,3,authors)
+                    ws.write(rowIndex,4,authors)
 
                         #print author
                         #outputFile.write(cutHeadTail(author) + '/')
@@ -114,12 +113,18 @@ for journalName in journalList:
                     orgnDiv = re.search(r'<div\s*class="orgn".*?div>', articlRes)
                     orgnList = re.findall(r'>[^<][^>]+?<', orgnDiv.group())
                     orgns = ''
+                    orgnNum = 0
                     for orgn in orgnList:
+                        orgn = orgn.strip('<')
+                        orgn = orgn.strip('>')
                         orgns += orgn + '/'
+                        orgnNum += 1
+                        if orgnNum >= 3:
+                            break
                         #print orgn
                         #outputFile.write(cutHeadTail(orgn) + '/')
                     #outputFile.write(',,' + articlDetailUrl + '\n')
-                    ws.write(rowIndex,4,orgns)
+                    ws.write(rowIndex,5,orgns)
 
                     fundDiv = re.search(r'<label id="catalog_FUND">基金：</label>[\s\S]*?</p',articlRes)
                     if fundDiv != None:
@@ -128,11 +133,11 @@ for journalName in journalList:
                         for fund in fundList:
                             funds += fund + '/'
                         ws.write(rowIndex,6,funds)
-                    ws.write(rowIndex,7,articlDetailUrl)
+                    #ws.write(rowIndex,7,articlDetailUrl)
                     articlIndex += 1
             break
     #outputFile.close()
-wb.save('dataTest/'+year + '.xls')
+wb.save('dataTest/'+year + '-1.xls')
 endTime = time.asctime( time.localtime(time.time()) )
 print "StartTime: ", startTime
 print "EndTime: ",endTime
