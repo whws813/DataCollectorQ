@@ -6,6 +6,7 @@ import xml.dom.minidom
 import re
 import time
 import  xlwt
+import  os
 
 
 def cutHeadTail(oldStr):
@@ -16,26 +17,21 @@ def titleFormer(oldTitle):
     return cutHeadTail(searchObj.group())
 
 
-journalList = ['KXTB','QHXB','JEXK','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT'] #N/Q/T/X
-#journalList =['DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB',ZGKS']
-#journalList = ['SXXB','JAXK','LXXB','BZCJ','WLXB','GXXB','FXHX','GDXH','TWXB','CHXB','DQWX','DQXK','DLYJ','STXB','SWDY','ZWSB','SLXX']
-#journalList = ['ZHYX','DSDX','DYJD','ZYKX','ZHLX','WEIJ','ZHYF','ZCYO','ZGZY','ZRSZ','ZJSB','ZYXX','ZGKF','ZHXX','ZHJH','ZHWK','ZHGK','ZGWK','ZHFC','ZHEK','ZHZL','ZHSJ','ZHPF','ZHEB','ZHYK','ZHKY','ZHGS','YXXB','ZGYX']
-#journalList = ['ZNYK','HBNB','GHDQ','TRXB','NYGU','XBZW','ZGSK','ZWBL','YYXB','LYKE','LYKX','XMSY','ZGXQ','CYXB','SCKX','DWYC','FUHE','BZGC','SXJS','ZLXB','ZKKX','JLXB','ZGKD','MTXB','SYXB','SKYK','TRQG','YJFX','GANT','JSXB','ZYXZ','COSE','JXXB','MCXX','ZGJX']
-#journalList = ['BGXB','NRJX','YZJS','ZGDC','DLXT','DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB','YSLX','JZJB','YTGC','YTLX','SLXB','SKXJ','JYGC','ZGTK','ZGGL','ZGZC','HKXB','TJJS','HJKZ','HJXX','ZAQK']
-#journalList = ['WLXB','STXB']
-
-year = '2014'
+#journalList = ['JEXK','KXTB','QHXB','XAJT','BJDZ','ZNGD','ZDZC','TJDZ','HEBX','DNDX','HZLG','SHJT','XTLL','ZGKS','YSXB','DZXE','KCDZ','SEAC','DLXB','DWJS','SXXB','JAXK','LXXB','BZCJ','WLXB','GXXB','FXHX','GDXH','TWXB','CHXB','DQWX','DQXK','DLYJ','STXB','SWDY','ZWSB','SLXX','ZHYX','DSDX','DYJD','ZYKX','ZHLX','WEIJ','ZHYF','ZCYO','ZGZY','ZRSZ','ZJSB','ZYXX','ZGKF','ZHXX','ZHJH','ZHWK','ZHGK']
+#journalList = ['ZGWK','ZHFC','ZHEK','ZHZL','ZHSJ','ZHPF','ZHEB','ZHYK','ZHKY','ZHGS','YXXB','ZGYX','ZNYK']
+journalList = ['HBNB','GHDQ','TRXB','NYGU','XBZW','ZGSK','ZWBL','YYXB','LYKE','LYKX','XMSY','ZGXQ','CYXB','SCKX','DWYC','FUHE','BZGC','SXJS','ZLXB','ZKKX','JLXB','ZGKD','MTXB','SYXB','SKYK','TRQG','YJFX','GANT','JSXB','ZYXZ','COSE','JXXB','MCXX','ZGJX','BGXB','NRJX','YZJS','ZGDC','DLXT','DZXU','DZYX','HWYJ','DBKX','JSJX','RJXB','MOTO','GFZC','HXXB','GXYB','SLGY','RLHX','DLQG','MFJS','SPKX','SPFX','YCKJ','ZGPG','MCGY','ZGZZ','SZYS','BFXB','YSLX','JZJB','YTGC','YTLX','SLXB','SKXJ','JYGC','ZGTK','ZGGL','ZGZC','HKXB','TJJS','HJKZ','HJXX','ZAQK']
+year = '2015'
 
 startTime = time.asctime( time.localtime(time.time()) )
 
-wb = xlwt.Workbook(encoding='utf-8')
-ws = wb.add_sheet('sheet1')
-rowIndex =0
+# wb = xlwt.Workbook(encoding='utf-8')
+# ws = wb.add_sheet('sheet1')
+# rowIndex =0
 for journalName in journalList:
 
     print journalName
-    # wb = xlwt.Workbook(encoding='utf-8')
-    # ws = wb.add_sheet(journalName)
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(journalName)
     # ws.write(0,0,'年份')
     # ws.write(0,1,'期号')
     # ws.write(0,2,'标题')
@@ -61,7 +57,7 @@ for journalName in journalList:
     collection = DOMTree.documentElement
     years = collection.getElementsByTagName("dl")
 
-    #rowIndex = 0
+    rowIndex = 0
     for yearItem in years:
         em = yearItem.getElementsByTagName('em')
         yearNum = em.item(0).firstChild.data
@@ -131,13 +127,19 @@ for journalName in journalList:
                         fundList = re.findall(r"'.*?\(.*?\)", fundDiv.group())
                         funds = ''
                         for fund in fundList:
+                            fund.strip('\'')
+                            fund.strip('fu')
+                            fund.strip(' ')
                             funds += fund + '/'
                         ws.write(rowIndex,6,funds)
                     #ws.write(rowIndex,7,articlDetailUrl)
                     articlIndex += 1
             break
     #outputFile.close()
-wb.save('dataTest/'+year + '-1.xls')
+    folder = os.path.exists('data/'+ year)
+    if not folder:
+        os.mkdir('data/'+year)
+    wb.save('data/'+year+'/' +journalName+ '.xls')
 endTime = time.asctime( time.localtime(time.time()) )
 print "StartTime: ", startTime
 print "EndTime: ",endTime
